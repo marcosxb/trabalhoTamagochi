@@ -5,6 +5,7 @@
  * @format
  */
 
+import { NavigationContainer } from '@react-navigation/native';
 import React from 'react';
 import type {PropsWithChildren} from 'react';
 import {
@@ -16,6 +17,8 @@ import {
   useColorScheme,
   View,
 } from 'react-native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import axios from 'axios';
 
 import {
   Colors,
@@ -24,6 +27,12 @@ import {
   LearnMoreLinks,
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
+import Cadastro from './paginas/Cadastro';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import Login from './paginas/Login';
+import ListaPets from './paginas/ListaPets';
+import CadastrarPet from './paginas/CadastrarPet';
+import Brincar from './paginas/Brincar';
 
 type SectionProps = PropsWithChildren<{
   title: string;
@@ -55,44 +64,29 @@ function Section({children, title}: SectionProps): JSX.Element {
   );
 }
 
-function App(): JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
+const Stack = createNativeStackNavigator();
 
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
+axios.interceptors.request.use(
+  async config => {
+      const token = await AsyncStorage.getItem('token');
+      config.headers["x-access-token"] = token;
+      return config;
+  },
+  error => Promise.reject(error)
+);
+
+function App(): JSX.Element {
 
   return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
-      />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.tsx</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
-        </View>
-      </ScrollView>
-    </SafeAreaView>
+    <NavigationContainer>
+      <Stack.Navigator>
+       <Stack.Screen name="Login" component={Login} />
+        <Stack.Screen name="Cadastro" component={Cadastro} />
+        <Stack.Screen name="ListaPets" component={ListaPets} options={{ headerBackVisible: false }} />
+        <Stack.Screen name="CadastrarPet" component={CadastrarPet} />
+        <Stack.Screen name="Brincar" component={Brincar} />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
 
