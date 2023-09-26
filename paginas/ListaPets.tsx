@@ -1,6 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { View, Text, FlatList, ActivityIndicator } from 'react-native';
+import LogoutButton from '../App';
 import styled from 'styled-components/native';
 import axios from 'axios';
 
@@ -52,21 +53,7 @@ const ListaPets = ({ navigation }: any) => {
   }
   useEffect(() => {
 
-    carregarListaAnimais();
-    // Simulando uma chamada à API fictícia com um atraso de 2 segundos
-    // setTimeout(() => {
-    //   const fakeApiData: any = [
-    //     { id: 1, name: 'Leão' },
-    //     { id: 2, name: 'Elefante' },
-    //     { id: 3, name: 'Girafa' },
-    //     { id: 4, name: 'Tigre' },
-    //     { id: 5, name: 'Macaco' },
-    //   ];
-    //   setAnimals(fakeApiData);
-    //   setLoading(false);
-    // }, 2000);
-
-  }, []);
+    carregarListaAnimais();}, []);
 
   return (
     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>

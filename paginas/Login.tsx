@@ -1,78 +1,118 @@
 import React, { useState } from 'react';
-import { Text, TextInput, TouchableOpacity, Alert } from 'react-native';
-import styled from 'styled-components/native';
+import { Text, TextInput, TouchableOpacity, Alert, View, StyleSheet, Animated } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 
-const Container = styled.View`
-  flex: 1;
-  justify-content: center;
-  align-items: center;
-`;
 
-const Input = styled.TextInput`
-  width: 80%;
-  height: 40px;
-  border: 1px solid #ccc;
-  margin-bottom: 10px;
-  padding: 10px;
-`;
+const Login = ({ navigation }: any) => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
-const Button = styled.TouchableOpacity`
-  background-color: #007bff;
-  padding: 10px 20px;
-  border-radius: 5px;
-`;
-
-const ButtonText = styled.Text`
-  color: #fff;
-  font-size: 16px;
-`;
-
-const Login = ({ navigation } : any) => {
-  const [email, setEmail] = useState('marcosxb@marcos.com.br');
-  const [password, setPassword] = useState('12345678');
-
+  // Função para fazer fazer o processo de login
   const handleLogin = async () => {
     try {
-      const response = await axios.post(`https://tamagochiapi-clpsampedro.b4a.run/login`, {
-        email,
-        password
-      });
+      // Utilizando o axios para fazer um post na API  com as credenciais de login
+      const response = await axios.post(
+        `https://tamagochiapi-clpsampedro.b4a.run/login`,
+        {
+          email,
+          password,
+        }
+      );
+      // Extrai o token de autenticação da resposta da API
       const token = response.data.token;
+      // Armazena o token para no AsyncStorage
       await AsyncStorage.setItem('token', token);
-      navigation.navigate('ListaPets')
+      //Se o Login for bem sucedido, navega para a tela "ListaPets"
+      navigation.navigate('ListaPets');
+      // Retorna em caso de erro na hora de autenticar
     } catch (error) {
-      console.error('Erro ao registrar:', error);
+      Alert.alert('Erro! Email ou senha inválidos');
     }
   };
 
   return (
-    <Container>
-      <Text>Registro</Text>
-      <Input
-        placeholder="Email"
-        onChangeText={(text) => setEmail(text)}
-        value={email}
-      />
-      <Input
-        placeholder="Senha"
-        onChangeText={(text) => setPassword(text)}
-        value={password}
-        secureTextEntry
-      />
-      <Button onPress={handleLogin}>
-        <ButtonText>Login</ButtonText>
-      </Button>
-
-      <Button onPress={() => {
-        navigation.navigate('Cadastro')
-      }}>
-        <ButtonText>Registrar-se</ButtonText>
-      </Button>
-
-    </Container>
+    <View style={styles.container}>
+      <View style={styles.content}>
+        <Text style={styles.title}>Login</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Email:"
+          onChangeText={(text) => setEmail(text)}
+          value={email}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Senha:"
+          onChangeText={(text) => setPassword(text)}
+          value={password}
+          secureTextEntry
+        />
+        <TouchableOpacity style={styles.button} onPress={handleLogin}>
+          <Text style={styles.buttonText}>Acessar</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.button, styles.secondaryButton]}
+          onPress={() => {
+            navigation.navigate('Cadastro');
+          }}
+        >
+          <Text style={styles.buttonText}>Cadastre-se</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
   );
 };
+
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#0d2543',
+  },
+  content: {
+    width: '80%',
+    padding: 20,
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    shadowColor: 'black',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 4,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 20,
+    color: '#333',
+  },
+  input: {
+    width: '100%',
+    height: 40,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    marginBottom: 15,
+    padding: 10,
+    borderRadius: 5,
+  },
+  button: {
+    backgroundColor: '#007bff',
+    padding: 10,
+    borderRadius: 5,
+    alignItems: 'center',
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  secondaryButton: {
+    backgroundColor: '#1caf9a',
+    marginTop: 10,
+  },
+});
 
 export default Login;

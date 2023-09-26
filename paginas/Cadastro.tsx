@@ -30,9 +30,9 @@ const ButtonText = styled.Text`
 `;
 
 const Cadastro = ({ navigation } : any) => {
-  const [email, setEmail] = useState('marcosxb@marcos.com.br');
-  const [password, setPassword] = useState('12345678');
-  const [confirmPassword, setConfirmPassword] = useState('12345678');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
 
   const handleRegister = async () => {
     if (password !== confirmPassword) {
@@ -41,7 +41,7 @@ const Cadastro = ({ navigation } : any) => {
     }
 
     try {
-      // Armazenar os dados no AsyncStorage
+      // Armazena os dados  de email e senha no AsyncStorage
       await AsyncStorage.setItem('email', email);
       await AsyncStorage.setItem('password', password);
       await axios.post(`https://tamagochiapi-clpsampedro.b4a.run/register`, {

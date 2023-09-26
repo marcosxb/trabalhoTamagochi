@@ -1,86 +1,34 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
-
 import { NavigationContainer } from '@react-navigation/native';
 import React from 'react';
-import type {PropsWithChildren} from 'react';
-import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  useColorScheme,
-  View,
-} from 'react-native';
+import {StyleSheet, Text, useColorScheme, View, Button, TextInput, Alert,} from 'react-native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import axios from 'axios';
-
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
-import Cadastro from './paginas/Cadastro';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Cadastro from './paginas/Cadastro';
 import Login from './paginas/Login';
 import ListaPets from './paginas/ListaPets';
 import CadastrarPet from './paginas/CadastrarPet';
 import Brincar from './paginas/Brincar';
 
-type SectionProps = PropsWithChildren<{
-  title: string;
-}>;
-
-function Section({children, title}: SectionProps): JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-  return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
-    </View>
-  );
-}
 
 const Stack = createNativeStackNavigator();
 
 axios.interceptors.request.use(
-  async config => {
-      const token = await AsyncStorage.getItem('token');
-      config.headers["x-access-token"] = token;
-      return config;
+  async (config) => {
+    const token = await AsyncStorage.getItem('token');
+    if (token) {
+      config.headers['x-access-token'] = token;
+    }
+    return config;
   },
-  error => Promise.reject(error)
+  (error) => Promise.reject(error)
 );
 
-function App(): JSX.Element {
-
+const App = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator>
-       <Stack.Screen name="Login" component={Login} />
+        <Stack.Screen name="Tela de acesso" component={Login} />
         <Stack.Screen name="Cadastro" component={Cadastro} />
         <Stack.Screen name="ListaPets" component={ListaPets} options={{ headerBackVisible: false }} />
         <Stack.Screen name="CadastrarPet" component={CadastrarPet} />
@@ -88,7 +36,25 @@ function App(): JSX.Element {
       </Stack.Navigator>
     </NavigationContainer>
   );
-}
+};
+
+const LogoutButton: React.FC<{ navigation: any}> = ({ navigation }) => {
+  const handleLogout = async () => {
+    try{
+      await AsyncStorage.removeItem('token');
+
+      navigation.navigate('Login');
+    }catch (erro) {
+      console.error('Erro ao fazer logout:');
+    }
+  };
+
+  return (
+    <View>
+      <Button title="Logout" onPress={handleLogout} />
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
   sectionContainer: {
@@ -110,3 +76,4 @@ const styles = StyleSheet.create({
 });
 
 export default App;
+
