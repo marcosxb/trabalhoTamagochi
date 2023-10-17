@@ -38,6 +38,7 @@ const App = () => {
   );
 };
 
+/** Tenho que tragalhar aqui ainda
 const LogoutButton: React.FC<{ navigation: any}> = ({ navigation }) => {
   const handleLogout = async () => {
     try{
@@ -55,7 +56,7 @@ const LogoutButton: React.FC<{ navigation: any}> = ({ navigation }) => {
     </View>
   );
 };
-
+*/
 const styles = StyleSheet.create({
   sectionContainer: {
     marginTop: 32,
