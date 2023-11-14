@@ -29,9 +29,9 @@ const Cadastro = ({ navigation }: any) => {
       );
       // Alertas para informar se foi ou não realizado o cadastro
       Alert.alert('Registro bem-sucedido!');
-      navigation.navigate('Login');
+      navigation.goBack();
     } catch (error) {
-      Alert.alert('Este email já está cadastrado');
+      Alert.alert('Email cadastrado ou dados invalidos!');
     }
   };
       // Conteiner principal, "tenho que estilizar melhor"

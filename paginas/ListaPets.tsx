@@ -1,43 +1,9 @@
 
 import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, ActivityIndicator } from 'react-native';
+import { View, Text, FlatList, ActivityIndicator, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import LogoutButton from '../App';
-import styled from 'styled-components/native';
 import axios from 'axios';
 
-const Button = styled.TouchableOpacity`
-  background-color: #007bff;
-  padding: 10px 20px;
-  border-radius: 5px;
-`;
-
-const ButtonText = styled.Text`
-  color: #fff;
-  font-size: 16px;
-`;
-
-export const ContainerAnimal = styled.View`
-    display: flex;
-    flex-direction: row;
-    padding: 10px;
-    width: 80%;
-    margin: 10%;
-    background: gray;
-    border-radius: 14px;
-    justify-content: space-between;
-`
-
-const ContainerButtonAnimal = styled.TouchableOpacity`
-    background: white;
-    padding: 14px;
-    margin-bottom: 10px;
-`
-
-const TitleAnimal = styled.Text`
-    font-size: 14px;
-    font-weight: bold;
-    color: black;
-`
 
 const ListaPets = ({ navigation }: any) => {
   const [loading, setLoading] = useState(true);
@@ -52,69 +18,131 @@ const ListaPets = ({ navigation }: any) => {
 
   }
   useEffect(() => {
-
     carregarListaAnimais();}, []);
 
   return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-
-    <Button onPress={() => {
+    <View style={styles.container}>
+      <TouchableOpacity
+      style={styles.button}
+      onPress={() => {
         navigation.navigate('CadastrarPet',{
-            onGoBack: () => {
-                carregarListaAnimais();
-            }
-        })
-      }}>
-        <ButtonText>Cadastrar PET</ButtonText>
-      </Button>
+          onGoBack: () => {
+              carregarListaAnimais();
+      },
+      });
+    }}
+    >
+      <Text style={styles.buttonText}>Cadastrar PET</Text>
+    </TouchableOpacity> 
 
       
-    {loading == false && animals.length == 0 && <Text>Nenhum pet encontrado nesta conta</Text>}
+    {loading == false && animals.length == 0 && <Text>Nenhum Pet foi cadastrado ainda</Text>}
 
       {loading ? (
         <ActivityIndicator size="large" color="#007bff" />
       ) : (
         <FlatList
           data={animals}
-          style={{width:"100%"}}
+          style={{width: '100%' }}
           keyExtractor={(item: any) => item.id.toString()}
           renderItem={({ item }) => (
-            <ContainerAnimal>
-                
-                <View>
-                    <TitleAnimal>{item.name}</TitleAnimal>
-                    <ContainerButtonAnimal style={{ marginTop: 20 }} onPress={() => navigation.navigate(`Brincar`, { id: item.id })} >
-                        <TitleAnimal>Brincar</TitleAnimal>
-                    </ContainerButtonAnimal>
-                </View>
-                
-
-                <View>
-                    <ContainerButtonAnimal onPress={() => {
-                        navigation.navigate('CadastrarPet', {
-                            id: item.id,
-                            onGoBack: () => carregarListaAnimais(),
-                        })
-                    }} >
-                        <TitleAnimal>Editar</TitleAnimal>
-                    </ContainerButtonAnimal>
-                    <ContainerButtonAnimal onPress={async () => {
-                        await axios.delete(`https://tamagochiapi-clpsampedro.b4a.run/pet/${item.id}`)
-                        carregarListaAnimais();
-                    }} >
-                        <TitleAnimal>Deletar</TitleAnimal>
-                    </ContainerButtonAnimal>
-                </View>
-                
-
-            </ContainerAnimal>
+              <View style={styles.containerAnimal}>
+                  <Image
+                   source={require('./../image/feliz1.jpg')}
+                   style={styles.image}
+                   />
+                    <View style={styles.infoContainer}>
+                    <Text style={styles.titleAnimal}>{item.name}</Text>
+                    <View style={styles.buttonContainer}>
+                    <TouchableOpacity
+                     style={styles.buttonAnimal}
+                        onPress={() => navigation.navigate(`Brincar`, { id: item.id} )}
+                    >
+                    <Text style={styles.buttonText}>Brincar</Text>
+                    </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.buttonAnimal}
+                  onPress={() => {
+                    navigation.navigate('CadastrarPet', {
+                      id: item.id,
+                      onGoBack: () => carregarListaAnimais(),
+                    });
+                  }}
+                >
+                  <Text style={styles.buttonText}>Editar</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.buttonAnimal}
+                  onPress={async () => {
+                    await axios.delete(`https://tamagochiapi-clpsampedro.b4a.run/pet/${item.id}`);
+                    carregarListaAnimais();
+                  }}
+                >
+                  <Text style={styles.buttonText}>Deletar</Text>
+                </TouchableOpacity>
+              </View>
+            </View> 
+            </View>              
           )}
         />
       )}
-
-
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#0d2543'
+  },
+  button: {
+    backgroundColor: '#1caf9a',
+    padding: 10,
+    borderRadius: 5,
+    marginTop: 10,
+  },
+  containerAnimal: {
+    display: 'flex',
+    flexDirection: 'row',
+    padding: 10,
+    width: '100%',
+    margin: '1%',
+    backgroundColor: '#fff',
+    borderRadius: 14,
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  infoContainer: {
+    flex: 1,
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+  },
+  buttonAnimal: {
+    backgroundColor: '#1caf9a',
+    padding: 10,
+    marginBottom: 5,
+    marginLeft: 10,
+    marginTop: 10,
+    borderRadius: 5,
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 16,
+  },
+  titleAnimal: {
+    fontSize: 25,
+    fontWeight: 'bold',
+    color: 'black',
+  },
+  image: {
+    width: 125,
+    height: 125,
+    borderRadius: 125,
+  },
+});
 
 export default ListaPets;

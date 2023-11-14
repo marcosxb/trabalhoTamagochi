@@ -27,7 +27,7 @@ const Login = ({ navigation }: any) => {
       navigation.navigate('ListaPets');
       // Retorna em caso de erro na hora de autenticar
     } catch (error) {
-      Alert.alert('Erro! Email ou senha inválidos');
+      Alert.alert('Erro! seu E-mail e ou senha estão invalidos!');
     }
   };
 

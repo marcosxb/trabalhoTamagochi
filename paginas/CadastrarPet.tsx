@@ -1,84 +1,104 @@
 import React, { useEffect, useState } from 'react';
-import { Text, TextInput, TouchableOpacity, Alert } from 'react-native';
-import styled from 'styled-components/native';
+import { Text, TextInput, TouchableOpacity, View, StyleSheet, Image, Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 
-const Container = styled.View`
-  flex: 1;
-  justify-content: center;
-  align-items: center;
-`;
-
-const Input = styled.TextInput`
-  width: 80%;
-  height: 40px;
-  border: 1px solid #ccc;
-  margin-bottom: 10px;
-  padding: 10px;
-`;
-
-const Button = styled.TouchableOpacity`
-  background-color: #007bff;
-  padding: 10px 20px;
-  border-radius: 5px;
-`;
-
-const ButtonText = styled.Text`
-  color: #fff;
-  font-size: 16px;
-`;
-
-const CadastrarPet = ({ route, navigation } : any) => {
-  const [nome, setNome] = useState('Pikachu');
+const CadastrarPet = ({ route, navigation }: any) => {
+  const [nome, setNome] = useState('');
   const { onGoBack, id } = route.params;
 
   const carregarTela = async () => {
-    if(id) {
-        const response = await axios.get(`https://tamagochiapi-clpsampedro.b4a.run/pet/${id}`);
-        setNome(response.data.name);
+    if (id) {
+      const response = await axios.get(`https://tamagochiapi-clpsampedro.b4a.run/pet/${id}`);
+      setNome(response.data.name);
     }
-  }
+  };
 
   useEffect(() => {
     carregarTela();
-  }, [])
+  }, []);
 
   const handlePost = async () => {
     try {
-
-      if(!id) {
+      if (!id) {
         await axios.post(`https://tamagochiapi-clpsampedro.b4a.run/pet`, {
-            name: nome,
+          name: nome,
         });
         Alert.alert('Cadastro Efetuado!');
       } else {
         await axios.put(`https://tamagochiapi-clpsampedro.b4a.run/pet/${id}`, {
-            name: nome,
+          name: nome,
         });
         Alert.alert('Cadastro Atualizado!');
       }
-      
-      onGoBack();
+
       navigation.goBack();
+      onGoBack();
     } catch (error) {
       console.error('Erro ao registrar:', error);
     }
   };
 
   return (
-    <Container>
-      <Text>Registro</Text>
-      <Input
-        placeholder="Nome"
+    <View style={styles.container}>
+      <Image
+        source={require('./../image/feliz1.jpg')}
+        style={styles.logo}
+      />
+      <Text style={styles.title}>Digite um nome:</Text>
+      <TextInput
+        style={styles.input}
+        placeholder="Nome:"
         onChangeText={(text) => setNome(text)}
         value={nome}
       />
-      <Button onPress={handlePost}>
-        <ButtonText>Cadastrar</ButtonText>
-      </Button>
-    </Container>
+      <TouchableOpacity style={styles.button} onPress={handlePost}>
+        <Text style={styles.buttonText}>Cadastrar / Atualizar</Text>
+      </TouchableOpacity>
+    </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#0d2543',
+    padding: 20,
+  },
+  logo: {
+    width: 200,
+    height: 200,
+    borderRadius: 200,
+    marginBottom: 50,
+  },
+  title: {
+    fontSize: 24,
+    marginBottom: 20,
+    color: '#fff',
+  },
+  input: {
+    width: '100%',
+    height: 40,
+    backgroundColor: '#fff',
+    borderColor: '#1caf9a',
+    borderWidth: 1,
+    marginBottom: 20,
+    padding: 10,
+    borderRadius: 5,
+    color: '#000000',
+  },
+  button: {
+    backgroundColor: '#1caf9a',
+    padding: 10,
+    borderRadius: 5,
+    alignSelf: 'center',
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 16,
+  },
+});
 
 export default CadastrarPet;

@@ -1,47 +1,32 @@
 import React, { useEffect, useState } from 'react';
-import { Button } from 'react-native';
-import styled from 'styled-components/native';
+import { Button, Image, View, Text, StyleSheet } from 'react-native';
 import axios from 'axios';
 
-const Container = styled.View`
-  flex: 1;
-  justify-content: center;
-  align-items: center;
-`;
+interface Pet {
+  foodLevel: number;
+  funLevel: number;
+  restLevel: number;
+}
 
-const Heading = styled.Text`
-  font-size: 24px;
-  margin-bottom: 20px;
-`;
+interface RouteParams {
+  onGoBack: () => void;
+  id: string;
+}
 
-const Stats = styled.View`
-  flex-direction: row;
-  margin-bottom: 20px;
-`;
-
-const StatText = styled.Text`
-  margin-right: 20px;
-`;
-
-const ButtonContainer = styled.View`
-  flex-direction: row;
-  justify-content: space-between;
-`;
-
-const Brincar = ({ route }: any) => {
-  const [pet, setPet] = useState<any | null>(null)
+const Brincar: React.FC<{ route: { params: RouteParams } }> = ({ route }) => {
+  const [pet, setPet] = useState<Pet | null>(null);
   const { onGoBack, id } = route.params;
 
   const carregarTela = async () => {
-    if(id) {
-        const response = await axios.get(`https://tamagochiapi-clpsampedro.b4a.run/pet/${id}`);
-        setPet(response.data);
+    if (id) {
+      const response = await axios.get(`https://tamagochiapi-clpsampedro.b4a.run/pet/${id}`);
+      setPet(response.data);
     }
-  }
+  };
 
   useEffect(() => {
     carregarTela();
-  }, [])
+  }, []);
 
   const handlePlay = async () => {
     const response = await axios.post(`https://tamagochiapi-clpsampedro.b4a.run/pet/${id}/play`);
@@ -59,21 +44,89 @@ const Brincar = ({ route }: any) => {
   };
 
   return (
-    <Container>
-      <Heading>Tamagotchi</Heading>
-      <Stats>
-        {pet && <StatText>Hunger: {pet.foodLevel}%</StatText>}
-        {pet && <StatText>Happiness: {pet.funLevel}%</StatText>}
-        {pet && <StatText>Energy: {pet.restLevel}%</StatText>}
+    <View style={styles.container}>
+      <Text style={styles.heading}>Tamagotchi</Text>
+      <Image
+        source={getPetImage()} // Chama a função getPetImage para obter a imagem apropriada
+        style={styles.petImage}
+      />
 
-      </Stats>
-      <ButtonContainer>
-        <Button title="Brincar" onPress={handlePlay} />
+      <View style={styles.stats}>
+        {pet && <Text style={styles.statText}>Alimentação: {pet.foodLevel.toFixed(2)}%</Text>}  
+      </View>
+      <View style={styles.stats}>
+        {pet && <Text style={styles.statText}>Felicidade: {pet.funLevel.toFixed(2)}%</Text>}
+      </View>
+      <View style={styles.stats}>
+        {pet && <Text style={styles.statText}>Energia: {pet.restLevel.toFixed(2)}%</Text>}
+      </View>
+      
+
+      <View style={styles.buttonAnimal}>
         <Button title="Alimentar" onPress={handleFeed} />
+        <Button title="Brincar" onPress={handlePlay} />
         <Button title="Descansar" onPress={handleRest} />
-      </ButtonContainer>
-    </Container>
+      </View>
+    </View>
   );
+  function getPetImage() {
+    if (pet) {
+      if (pet.funLevel >= 100) {
+        return require('./../image/1.jpg');
+      } else if (pet.funLevel >= 95) {
+        return require('./../image/2.jpg');
+      } else if (pet.funLevel >= 85) {
+        return require('./../image/3.jpg');
+      } else {
+        return require('./../image/4.png');
+      }
+    }
+
+    
+    return require('./../image/4.png');
+  }
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#0d2543',
+    padding: 20,
+  },
+  heading: {
+    fontSize: 24,
+    marginBottom: 20,
+    color: '#1caf9a',
+  },
+  stats: {
+    flexDirection: 'row',
+    marginBottom: 20,
+  },
+  statText: {
+    marginRight: 10,
+    fontSize: 20,
+    color: '#fff',
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  petImage:{
+    width: 300,
+    height: 300,
+    borderRadius: 0,
+    marginBottom: 50,
+  },
+  buttonAnimal:{
+    flexDirection: 'row',
+    padding: 10,
+    marginLeft: 10,
+    marginTop: 10,
+    borderRadius: 5,
+ 
+  },
+});
 
 export default Brincar;
